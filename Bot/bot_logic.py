@@ -12,7 +12,46 @@ class Square():
         self.coordinate = coordinate 
         self.score = score 
 
-    def update_square_score(playerID: int, player_coordinate: list):
+    # Deduct square value after bot place piece -> blocking certain player connecting pieces
+    def reevaluate_square_value(bot_coordinate: list):
+        player_piece_queue = deque(player_piece) 
+        while len(player_piece_queue) != 0: # On-going Queue
+            player_coordinate = player_piece_queue.popleft()
+            horizontal, vertical, positive_diagonal, negative_diagonal = combine_directional_coordinates(player_coordinate)
+            combined_array = [horizontal, vertical, positive_diagonal, negative_diagonal]
+            
+            # The further the square is away from the player piece, the lower it gets -> decrement/square = 0.1 and begins at 1
+            ldecrement = 1 # left
+            rdecrement = 1 # right
+            
+            for array in combined_array:
+                
+                # Identify other player pieces on the array
+                board_array_visual = [Game_Board[i[0]][i[1]] for i in array]
+                
+                for squareID in range(len(array)): # board_array_visual consists of either space or pieces(Player/Bot)
+                    if board_array_visual[squareID] == 'X': # Bot piece
+                        
+                        # Validate adjacent coordinates to check for connect 5 space
+                        # Divide and Conquer -> Seperate array to 2
+                        
+                        left_array = array[:squareID]
+                        right_array = array[squareID:]
+                        
+                        if len(left_array) < 5:
+                            print("left array does not have required length(5)")
+                        elif len(left_array) >= 5:
+                            # Capable of 5
+                            try:
+                                board_array_visual.index("O") 
+                            except ValueError:
+                                pass # do smth else
+                            
+                            
+                        if len(right_array) < 5:
+                            print("right array does not have required length(5)")
+    
+    def add_square_value(player_coordinate: list):
         # player_piece -> Stores all the coordinates of pieces played by player
         # Dynamic Scoring: The score of each square can be dynamically updated throughout the game based on new pieces being added to the board. 
         # The score of every square that are related to the player's latest piece will be reviewed
