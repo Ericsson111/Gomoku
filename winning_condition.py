@@ -5,16 +5,12 @@ bot_win_condition = "XXXXX"
 
 # Identify Coordinates
 def horizontal_coordinates(player_coordinate: list) -> list:
-    print(player_coordinate)
     row = int(player_coordinate[0])
-    
     Game_Board_Row = [(row, i) for i in range(board_length)]
     return sorted(Game_Board_Row)
 
 def vertial_coordinates(player_coordinate: list) -> list:
-    print(player_coordinate)
     col = int(player_coordinate[1])
-
     Game_Board_Col = [(i, col) for i in range(board_length)]
     return sorted(Game_Board_Col)
 
