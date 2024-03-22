@@ -28,9 +28,11 @@ def GamePlay():
     display_board(Game_Board)
     for playerID in gameTurn:  # 0, 1, 0, 1
         moveCord = play_move(playerID)  # Coordinate of user's piece
-        display_board(Game_Board)
-        bot_logic.Square.update_square_score(playerID, moveCord)
-        bot_logic.display_board(bot_logic.board)
+        if playerID == 0:
+            player_piece.append(moveCord) 
+        bot_logic.Square.evaluate_square_value()
+        display_board(Game_Board) 
+        # bot_logic.display_board(bot_logic.board)
         # Check Win Condition
         print(player_piece)
         if check_row_and_column(moveCord) or check_diagonal(moveCord):
