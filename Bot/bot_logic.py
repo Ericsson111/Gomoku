@@ -2,8 +2,19 @@ import sys
 import os 
 sys.path.append(os.path.dirname(os.path.realpath("__init__.py")))
 
+from collections import deque 
+
 from game_board import *
 from winning_condition import *
+
+""" 
+Initialize Matrix that represents the probability score of each squre (start of with 0)
+Identify all the player pieces on board
+Create object attributes for all the pieces (Related arrays -> horizontal, vertical, diagonal and also their coordinates)
+Gather all the coordinates that are within the range of all the player pieces and count the amount of reoccurance of each coordinate(# of Intersections).
+Update these scores onto the matrix
+Identify the coordinate(square) with the highest probability score
+"""
 
 board = []  # This will hold rows of Square objects
 
@@ -12,82 +23,86 @@ class Square():
         self.coordinate = coordinate 
         self.score = score 
 
-    # Deduct square value after bot place piece -> blocking certain player connecting pieces
-    def reevaluate_square_value(bot_coordinate: list):
-        player_piece_queue = deque(player_piece) 
-        while len(player_piece_queue) != 0: # On-going Queue
-            player_coordinate = player_piece_queue.popleft()
-            horizontal, vertical, positive_diagonal, negative_diagonal = combine_directional_coordinates(player_coordinate)
-            combined_array = [horizontal, vertical, positive_diagonal, negative_diagonal]
-            
-            # The further the square is away from the player piece, the lower it gets -> decrement/square = 0.1 and begins at 1
-            ldecrement = 1 # left
-            rdecrement = 1 # right
-            
-            for array in combined_array:
-                
-                # Identify other player pieces on the array
-                board_array_visual = [Game_Board[i[0]][i[1]] for i in array]
-                
-                for squareID in range(len(array)): # board_array_visual consists of either space or pieces(Player/Bot)
-                    if board_array_visual[squareID] == 'X': # Bot piece
-                        
-                        # Validate adjacent coordinates to check for connect 5 space
-                        # Divide and Conquer -> Seperate array to 2
-                        
-                        left_array = array[:squareID]
-                        right_array = array[squareID:]
-                        
-                        if len(left_array) < 5:
-                            print("left array does not have required length(5)")
-                        elif len(left_array) >= 5:
-                            # Capable of 5
-                            try:
-                                board_array_visual.index("O") 
-                            except ValueError:
-                                pass # do smth else
-                            
-                            
-                        if len(right_array) < 5:
-                            print("right array does not have required length(5)")
-    
-    def add_square_value(player_coordinate: list):
-        # player_piece -> Stores all the coordinates of pieces played by player
-        # Dynamic Scoring: The score of each square can be dynamically updated throughout the game based on new pieces being added to the board. 
-        # The score of every square that are related to the player's latest piece will be reviewed
-        if playerID == 0: # Player Piece
-            horizontal, vertical, positive_diagonal, negative_diagonal = combine_directional_coordinates(player_coordinate)
-            combined = [horizontal, vertical, positive_diagonal, negative_diagonal]
-            coordinates = horizontal + vertical + positive_diagonal + negative_diagonal
+    def breaking_array(array):
+        # Convert coordinates array to visual(board) array -> consisting spaces/pieces
+        array1 = [Game_Board[cord[0]][cord[1]] for cord in array]
+        """ 
+        array: [(2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9)]   array1: [' ', ' ', ' ', 'O', ' ', ' ', ' ', ' ', ' ', ' ']
+        array: [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3), (9, 3)]   array1: [' ', ' ', 'O', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+        array: [(0, 5), (1, 4), (2, 3), (3, 2), (4, 1), (5, 0)]                                   array1: [' ', ' ', 'O', ' ', ' ', ' ']
+        array: [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]           array1: [' ', ' ', 'O', 'X', 'O', ' ', ' ', ' ', ' ']
+        """
 
-            # The further the square is away from the player piece, the lower it gets -> decrement/square = 0.1 and begins at 1
-            ldecrement = 1 
+        botPieceCount = array1.count(bot_piece)
+        if botPieceCount >= 1: # x >= 1 case (combined)
+
+            for _ in range(botPieceCount):
+                pieceInd = array1.index(bot_piece) 
+                leftArray = array1[:pieceInd] 
+                rightArray = array1[pieceInd+1:] 
+                print(f"leftArray: {leftArray}, rightArray: {rightArray}") 
+
+                if bot_piece in leftArray:
+                    return Square.breaking_array(array[:pieceInd])
+                if bot_piece in rightArray:
+                    return Square.breaking_array(array[pieceInd+1:])
+                else: # Bot piece in neither array 
+                    # Measure length of array
+                    for arr in [leftArray, rightArray]:  # Loop over both left/right arrays
+                        if len(arr) >= 5:
+                            if player_piece in arr:
+                                print(f"{arr} is sufficient for player to win and require danger level ratings")
+                                # eturn Square.danger_level_evaluation() 
+                            else:
+                                print(f"{arr} is sufficient for player to win")
+                        else:
+                            print(f"{arr} is insufficient for player to win")
+        else: # x = 0 case
+            print(f"{array1} is sufficient for player to win")
+
+    def evaluate_square_value():
+        player_piece_queue = deque(player_pieces_played)
+        while len(player_piece_queue) != 0:
+            player_coordinate = player_piece_queue.popleft() 
+            horizontal, vertical, positive_diagonal, negative_diagonal = combine_directional_coordinates(player_coordinate)
+            arrays = [horizontal, vertical, positive_diagonal[::-1], negative_diagonal]
+            array_names = ["Horizontal", "Vertical", "Positive Diagonal", "Negative Diagonal"]
+
+            for arrayID in range(len(arrays)):
+                print(f"------------------------------ {player_coordinate}: {array_names[arrayID]} Array ------------------------------")
+                if len(arrays[arrayID]) >= 5:
+                    Square.breaking_array(arrays[arrayID])  
+                else:
+                    print(f"{arrays[arrayID]} is insufficient for player to win")
+
+    def danger_level_evaluation(cord_array: list, visual_array: list):
+        # The further the square is away from the player piece, the lower it gets -> decrement/square = 0.1 and begins at 1
+        ldecrement = 1 
+        rdecrement = 1
+
+        # Apply "Distance Based Scoring"
+        for array in visual_array:
+            
+            playerInd = array.index(player_piece)
+            leftOfArray = playerInd
+            rightOfArray = len(array) - (playerInd + 1) 
+
+            # 2 for loops for travelling in both direction
+            for l in range(leftOfArray + 1):
+                row, col = cord_array[playerInd - l]
+                square = board[row][col]
+                square.score = round(square.score + ldecrement, 1)
+                ldecrement -= 0.1
+
+            for r in range(rightOfArray + 1):
+                row, col = array[playerInd + r]
+                square = board[row][col]
+                square.score = round(square.score + rdecrement, 1)
+                rdecrement -= 0.1
+
+            # Reset distance decrement
+            ldecrement = 1
             rdecrement = 1
-
-            # Apply "Distance Based Scoring"
-            for array in combined:
-                # horizontal -> vertical -> positive_diagonal -> negative_diagonal
-                row, col = player_coordinate
-                current_ind = array.index((row, col)) 
-                leftOfArray = current_ind
-                rightOfArray = len(array) - (current_ind + 1) 
-
-                # 2 for loops for travelling in both direction
-                for l in range(leftOfArray + 1):
-                    row, col = array[current_ind - l]
-                    square = board[row][col]
-                    square.score = round(square.score + ldecrement, 1)
-                    ldecrement -= 0.1
-
-                for r in range(rightOfArray + 1):
-                    row, col = array[current_ind + r]
-                    square = board[row][col]
-                    square.score = round(square.score + rdecrement, 1)
-                    rdecrement -= 0.1
-
-                # Reset distance decrement
-                ldecrement = 1
-                rdecrement = 1
 
     def sort_square_score() -> list:
         # [0,0] = 0, [1,1] = 0, [1,2] = 1
@@ -148,3 +163,9 @@ def display_board(board):
 
         # Print row separator
         print("   +" + "-" * (num_cols * (column_width + 1) - 1) + "+")
+
+
+# player_piece -> Stores all the coordinates of pieces played by player
+# Queue for Scanning: Implement a queue system to efficiently manage and scan board squares. When a new piece is placed, 
+# add the surrounding squares to the queue for reevaluation since the strategic value of these squares has likely changed due to the new piece.
+
