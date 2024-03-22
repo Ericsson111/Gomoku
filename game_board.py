@@ -6,11 +6,11 @@ Game_Board = [[' ' for _ in range(board_length)] for _ in range(board_length)]
 gameTurn = [0, 1] * (board_length ** 2 // 2) if board_length ** 2 % 2 == 0 else [0, 1] * ((board_length ** 2 - 1) // 2) + [0]
 
 # Define Game Piece and Player 
-Player = 'O'
-Guest = 'X'
+player_piece = 'O'
+bot_piece = 'X'
 player_dict = {0: 'O', 1: 'X'}
 player_name = {0: 'Player', 1: 'Guest'}
-player_piece = None # Coordinates of all pieces played by the player
+player_pieces_played = [] # Coordinates of all pieces played by the player
 
 # Define Match Winner
 matchWinner = ''
