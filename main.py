@@ -34,7 +34,7 @@ def GamePlay():
         display_board(Game_Board) 
         # bot_logic.display_board(bot_logic.board)
         # Check Win Condition
-        print(player_piece)
+        print("-"*160)
         if check_row_and_column(moveCord) or check_diagonal(moveCord):
             Game_Board = clearBoard()
             player_piece = [] 
