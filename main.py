@@ -24,12 +24,12 @@ def play_move(player):
         return play_move(player)
 
 def GamePlay():
-    global Game_Board, matchWinner, player_piece
+    global Game_Board, matchWinner, player_pieces_played
     display_board(Game_Board)
     for playerID in gameTurn:  # 0, 1, 0, 1
         moveCord = play_move(playerID)  # Coordinate of user's piece
         if playerID == 0:
-            player_piece.append(moveCord) 
+            player_pieces_played.append(moveCord) 
         bot_logic.Square.evaluate_square_value()
         display_board(Game_Board) 
         # bot_logic.display_board(bot_logic.board)
@@ -37,7 +37,7 @@ def GamePlay():
         print("-"*160)
         if check_row_and_column(moveCord) or check_diagonal(moveCord):
             Game_Board = clearBoard()
-            player_piece = [] 
+            player_pieces_played = [] 
             matchWinner = player_name[playerID]
             print("{} Wins!".format(matchWinner))
             print('-------------------------------')
