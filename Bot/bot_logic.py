@@ -40,6 +40,7 @@ class Square():
                 pieceInd = array1.index(bot_piece) 
                 leftArray = array1[:pieceInd] 
                 rightArray = array1[pieceInd+1:] 
+                print(f"array: {array1}") 
                 print(f"leftArray: {leftArray}, rightArray: {rightArray}") 
 
                 if bot_piece in leftArray:
