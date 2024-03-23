@@ -48,15 +48,17 @@ class Square():
                     return Square.breaking_array(array[pieceInd+1:])
                 else: # Bot piece in neither array 
                     # Measure length of array
-                    for arr in [leftArray, rightArray]:  # Loop over both left/right arrays
-                        if len(arr) >= 5:
-                            if player_piece in arr:
-                                print(f"{arr} is sufficient for player to win and require danger level ratings")
-                                # eturn Square.danger_level_evaluation() 
+                    arr = [array[:pieceInd], array[pieceInd+1:]]
+                    arr1 = [leftArray, rightArray]
+                    for arrID in range(2):  # Loop over both left/right arrays
+                        if len(arr1[arrID]) >= 5:
+                            if player_piece in arr1[arrID]:
+                                print(f"{arr1[arrID]} is sufficient for player to win and require danger level ratings")
+                                return Square.danger_level_evaluation(arr[arrID], arr1[arrID])  
                             else:
-                                print(f"{arr} is sufficient for player to win")
+                                print(f"{arr1[arrID]} is sufficient for player to win")
                         else:
-                            print(f"{arr} is insufficient for player to win")
+                            print(f"{arr1[arrID]} is insufficient for player to win")
         else: # x = 0 case
             print(f"{array1} is sufficient for player to win")
 
