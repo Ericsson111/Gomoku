@@ -81,7 +81,13 @@ class Square():
     def danger_level_evaluation(cord_array: list, visual_array: list):
         # The further the square is away from the player piece, the lower it gets -> decrement/square = 0.1 and begins at 1
         # Distance based dynamic scoring
-        pass 
+        player_piece_Ind = visual_array.index(player_piece) 
+        row, col = cord_array[player_piece_Ind]
+        board[row][col].score += 1
+        
+        left_increment = 1
+        right_increment = 1
+        distant_decrement = -0.1
 
     def sort_square_score() -> list:
         # [0,0] = 0, [1,1] = 0, [1,2] = 1
