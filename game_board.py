@@ -44,4 +44,5 @@ def display_board(board):
 
 def clearBoard():
     global Game_Board
-    Game_Board = [[' '] * board_length] * board_length
+    Game_Board = [[' ' for _ in range(board_length)] for _ in range(board_length)]
+
