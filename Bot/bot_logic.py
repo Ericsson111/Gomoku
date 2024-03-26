@@ -85,7 +85,13 @@ class Square():
         # Dynamic Distant Scoring -> Square's score can be varied based on it's distance from the player piece
         player_piece_Ind = visual_array.index(player_piece)
         row, col = cord_array[player_piece_Ind]
-        board[row][col].score += 1  # Increment on player piece position
+        # Check if the score has already been incremented for this coordinate
+        if [row, col] != player_coordinate:
+            # Increment the score on the board
+            board[row][col].score += 1
+            
+            # Update player_coordinate
+            player_coordinate = [row, col]
 
         increment = 1
         distant_decrement = -0.1
