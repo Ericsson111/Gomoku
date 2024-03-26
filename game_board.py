@@ -1,6 +1,6 @@
 
 # Define Game Board
-# Game Board Size: 5x5
+# Game Board Size: 10x10
 board_length = 10
 Game_Board = [[' ' for _ in range(board_length)] for _ in range(board_length)]
 gameTurn = [0, 1] * (board_length ** 2 // 2) if board_length ** 2 % 2 == 0 else [0, 1] * ((board_length ** 2 - 1) // 2) + [0]
