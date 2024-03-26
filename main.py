@@ -31,8 +31,8 @@ def GamePlay():
         if playerID == 0:
             player_pieces_played.append(moveCord) 
         bot_logic.Square.evaluate_square_value()
+        bot_logic.display_board(bot_logic.board)
         display_board(Game_Board) 
-        # bot_logic.display_board(bot_logic.board)
         # Check Win Condition
         print("-"*160)
         if check_row_and_column(moveCord) or check_diagonal(moveCord):
