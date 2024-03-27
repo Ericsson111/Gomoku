@@ -38,6 +38,8 @@ class Square():
 
             for _ in range(botPieceCount):
                 pieceInd = visual_array.index(bot_piece) 
+                row, col = cord_array[pieceInd]
+                board[row][col].score = 'X'
                 leftArray = visual_array[:pieceInd] 
                 rightArray = visual_array[pieceInd+1:] 
                 print(f"array: {visual_array}") 
@@ -82,57 +84,44 @@ class Square():
 
     @staticmethod
     def danger_level_evaluation(cord_array, visual_array):
-        # Dynamic Distant Scoring -> Square's score can be varied based on it's distance from the player piece
+        global player_coordinate
+        
         player_piece_Ind = visual_array.index(player_piece)
         row, col = cord_array[player_piece_Ind]
+        
         # Check if the score has already been incremented for this coordinate
-        if [row, col] != player_coordinate:
-            # Increment the score on the board
-            board[row][col].score += 1
-            
-            # Update player_coordinate
-            player_coordinate = [row, col]
-
+        board[row][col].score = 'O' 
+        
         increment = 1
         distant_decrement = -0.1
 
-        # Score adjustment for squares before the player piece
+        # Score adjustment for squares before and after the player piece
         for l in range(player_piece_Ind-1, -1, -1):
             distant = player_piece_Ind - l
             row, col = cord_array[l]
-            current_score = max(board[row][col].score + (increment + (distant_decrement * distant)), 0)  # Prevent negative scores
-            board[row][col].score = round(current_score, 1)
+            if board[row][col].score != 'O':
+                current_score = max(board[row][col].score + (increment + (distant_decrement * distant)), 0)
+                board[row][col].score = round(current_score, 1)
 
-        # Score adjustment for squares after the player piece
         for r in range(player_piece_Ind+1, len(cord_array)):
             distant = r - player_piece_Ind
             row, col = cord_array[r]
-            current_score = max(board[row][col].score + (increment + (distant_decrement * distant)), 0)  # Prevent negative scores
-            board[row][col].score = round(current_score, 1)
+            if board[row][col].score != 'O':
+                current_score = max(board[row][col].score + (increment + (distant_decrement * distant)), 0)
+                board[row][col].score = round(current_score, 1)
 
     def sort_square_score() -> list:
         # [0,0] = 0, [1,1] = 0, [1,2] = 1
         # Find the "highest score" in each row and compare them
-        peak = []
+        peaks = {}
 
-        for rowID in range(len(board_length)):         
-
-            max_score = 0
-            max_row_coordinates = [] # Perchance for tied maximum score 
-
-            # Iterate and find greatest possibility value
-            for colID in range(len(board_length)):
-
-                square = board[rowID][colID]
-                square_score = square.score
-
-                if square_score > max_score:
-                    max_score = square_score
-                    max_row_coordinates.append([rowID, colID]) 
+        for rowID in range(len(board_length)):
             
-            peak.append(max_row_coordinates)
+            max_val = sorted([i for i in board[rowID] if isinstance(i, float)])[-1]
+            max_count = board[rowID].count(max_val) 
+            peaks[rowID] = [max_val, max_count] 
 
-        return peak 
+        return peaks
 
 
 def refresh_score_board():
