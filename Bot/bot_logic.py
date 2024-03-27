@@ -7,15 +7,6 @@ from collections import deque
 from game_board import *
 from winning_condition import *
 
-""" 
-Initialize Matrix that represents the probability score of each squre (start of with 0)
-Identify all the player pieces on board
-Create object attributes for all the pieces (Related arrays -> horizontal, vertical, diagonal and also their coordinates)
-Gather all the coordinates that are within the range of all the player pieces and count the amount of reoccurance of each coordinate(# of Intersections).
-Update these scores onto the matrix
-Identify the coordinate(square) with the highest probability score
-"""
-
 board = []  # This will hold rows of Square objects
 
 class Square():
@@ -26,13 +17,6 @@ class Square():
     def breaking_array(cord_array):
         # Convert coordinates array to visual(board) array -> consisting spaces/pieces
         visual_array = [Game_Board[cord[0]][cord[1]] for cord in cord_array]
-        """ 
-        array: [(2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7), (2, 8), (2, 9)]   visual_array: [' ', ' ', ' ', 'O', ' ', ' ', ' ', ' ', ' ', ' ']
-        array: [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3), (9, 3)]   visual_array: [' ', ' ', 'O', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-        array: [(0, 5), (1, 4), (2, 3), (3, 2), (4, 1), (5, 0)]                                   visual_array: [' ', ' ', 'O', ' ', ' ', ' ']
-        array: [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8), (8, 9)]           visual_array: [' ', ' ', 'O', 'X', 'O', ' ', ' ', ' ', ' ']
-        """
-
         botPieceCount = visual_array.count(bot_piece)
         if botPieceCount >= 1: # x >= 1 case (combined)
 
@@ -110,18 +94,27 @@ class Square():
                 current_score = max(board[row][col].score + (increment + (distant_decrement * distant)), 0)
                 board[row][col].score = round(current_score, 1)
 
-    def sort_square_score() -> list:
-        # [0,0] = 0, [1,1] = 0, [1,2] = 1
-        # Find the "highest score" in each row and compare them
-        peaks = {}
+    def optimized_placement():
+        peaks = Square.max_square_score() 
+         
 
-        for rowID in range(len(board_length)):
+    def max_square_score():
+        # Find the maximum score on each row and compare
+        row_peaks = {}
+        for rowID in range(board_length):
             
-            max_val = sorted([i for i in board[rowID] if isinstance(i, float)])[-1]
-            max_count = board[rowID].count(max_val) 
-            peaks[rowID] = [max_val, max_count] 
+            max_val = max([[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if isinstance(board[rowID][i].score, float)])
+            max_vals = [[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if board[rowID][i].score == max_val[0]]
+            print(f"row: {rowID}, max val: {max_val}, vals: {max_vals}")
+            row_peaks[rowID] = max_vals 
+        print(f"row peaks: {row_peaks}")
 
-        return peaks
+        # Sort through peaks of each row and find the highest value 
+        absolute_peak = max([i[0][0] for i in row_peaks.values()]) 
+        absolute_peaks = [row_peaks[i] for i in range(len(row_peaks)) if row_peaks[i][0][0] == absolute_peak]
+        # absoloute_peaks:
+        # [[[0.9, [3, 4]], [0.9, [3, 5]], [0.9, [3, 6]]], [[0.9, [4, 4]], [0.9, [4, 6]]], [[0.9, [5, 4]], [0.9, [5, 5]], [0.9, [5, 6]]]]
+        return absolute_peaks  
 
 
 def refresh_score_board():
