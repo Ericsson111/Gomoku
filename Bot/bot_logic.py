@@ -3,6 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath("__init__.py")))
 
 from collections import deque 
+import itertools
 
 from game_board import *
 from winning_condition import *
@@ -18,6 +19,7 @@ class Square():
         # Convert coordinates array to visual(board) array -> consisting spaces/pieces
         visual_array = [Game_Board[cord[0]][cord[1]] for cord in cord_array]
         botPieceCount = visual_array.count(bot_piece)
+        
         if botPieceCount >= 1: # x >= 1 case (combined)
 
             for _ in range(botPieceCount):
@@ -96,7 +98,33 @@ class Square():
 
     def optimized_placement():
         peaks = Square.max_square_score() 
-         
+        score = {}
+        for ind in range(len(peaks)):
+            row, col = peaks[ind][1]
+            horizontal, vertical, positive_diagonal, negative_diagonal = combine_directional_coordinates([row, col])
+
+            horizontal = [Game_Board[cord[0]][cord[1]] for cord in horizontal]
+            vertical = [Game_Board[cord[0]][cord[1]] for cord in vertical]
+            positive_diagonal = [Game_Board[cord[0]][cord[1]] for cord in positive_diagonal]
+            negative_diagonal = [Game_Board[cord[0]][cord[1]] for cord in negative_diagonal]
+
+            score[ind] = [max([horizontal.count(player_piece), vertical.count(player_piece), positive_diagonal.count(player_piece),\
+                                negative_diagonal.count(player_piece)]), board[row][col].score, [row, col]]
+
+        # Sort through score
+        # Objective: Find max # of player pieces AND max square score 
+        max_square_value = 0
+        max_piece_count = 0
+        max_coordinate = None 
+        # score: {0: [1, 0.6, [0, 1]], 1: [1, 0.6, [0, 5]], 2: [1, 0.6, [0, 9]], 3: [1, 0.7, [1, 2]]}
+        for ind in range(len(score)):
+            piece_count, square_val, cord = score[ind] # [1, 0.6, [0, 1]]
+            if square_val >= max_square_value and piece_count >= max_piece_count: # Higher danger level score
+                max_square_value = square_val 
+                max_piece_count = piece_count
+                max_coordinate = cord  
+        print(f"max_piece_count: {max_piece_count}, max_square_value: {max_square_value}, max_coordinate: {max_coordinate}") 
+        return max_coordinate 
 
     def max_square_score():
         # Find the maximum score on each row and compare
@@ -105,17 +133,23 @@ class Square():
             
             max_val = max([[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if isinstance(board[rowID][i].score, float)])
             max_vals = [[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if board[rowID][i].score == max_val[0]]
-            print(f"row: {rowID}, max val: {max_val}, vals: {max_vals}")
             row_peaks[rowID] = max_vals 
-        print(f"row peaks: {row_peaks}")
 
-        # Sort through peaks of each row and find the highest value 
-        absolute_peak = max([i[0][0] for i in row_peaks.values()]) 
-        absolute_peaks = [row_peaks[i] for i in range(len(row_peaks)) if row_peaks[i][0][0] == absolute_peak]
-        # absoloute_peaks:
-        # [[[0.9, [3, 4]], [0.9, [3, 5]], [0.9, [3, 6]]], [[0.9, [4, 4]], [0.9, [4, 6]]], [[0.9, [5, 4]], [0.9, [5, 5]], [0.9, [5, 6]]]]
-        return absolute_peaks  
+        # Send row peaks through 
+        return flatten_list([i for i in row_peaks.values()])
 
+
+def flatten_list(nested_list):
+    one_dimensional_array = []
+
+    # Iterate through each sublist in the nested list
+    for sublist in nested_list:
+        # Then, iterate through each item in the sublist
+        for item in sublist:
+            # Add the item to the one-dimensional array
+            one_dimensional_array.append(item)
+
+    return one_dimensional_array
 
 def refresh_score_board():
     global board 
