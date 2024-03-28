@@ -27,11 +27,14 @@ def GamePlay():
     global Game_Board, matchWinner, player_pieces_played
     display_board(Game_Board)
     for playerID in gameTurn:  # 0, 1, 0, 1
-        moveCord = play_move(playerID)  # Coordinate of user's piece
         if playerID == 0:
+            moveCord = play_move(playerID)  # Coordinate of user's piece
             player_pieces_played.append(moveCord) 
-        bot_logic.Square.evaluate_square_value()
-        bot_logic.display_board(bot_logic.board)
+            bot_logic.Square.evaluate_square_value()
+            bot_logic.display_board(bot_logic.board)
+        elif playerID == 1:
+            row, col = bot_logic.Square.optimized_placement()
+            Game_Board[row][col] = bot_piece
         display_board(Game_Board) 
         # Check Win Condition
         print("-"*160)
