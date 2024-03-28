@@ -39,7 +39,7 @@ def positive_diagonal_coordinates(player_coordinate: list) -> list:
         if col >= 0 and row <= board_length - 1:
             if (row, col) not in coordinates:
                 coordinates.append((row, col))
-    print(f"positive diagonal: {sorted(coordinates)}")
+                
     return sorted(coordinates)
 
 def negative_diagonal_coordinates(player_coordinate: list) -> list:
@@ -69,8 +69,7 @@ def negative_diagonal_coordinates(player_coordinate: list) -> list:
         if row <= board_length - 1 and col <= board_length - 1:
             if (row, col) not in coordinates:
                 coordinates.append((row, col))
-    
-    print(f"negative diagonal: {sorted(coordinates)}")
+
     return sorted(coordinates)
 
 def combine_directional_coordinates(player_coordinate: list) -> list:
