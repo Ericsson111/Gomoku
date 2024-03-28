@@ -116,15 +116,20 @@ class Square():
         max_square_value = 0
         max_piece_count = 0
         max_coordinate = None 
+        max_coordinate1 = None 
         # score: {0: [1, 0.6, [0, 1]], 1: [1, 0.6, [0, 5]], 2: [1, 0.6, [0, 9]], 3: [1, 0.7, [1, 2]]}
+        
+        
+        # Find all coordinates with maximum piece_count then find the max_square_value among these
+        
         for ind in range(len(score)):
             piece_count, square_val, cord = score[ind] # [1, 0.6, [0, 1]]
-            if square_val >= max_square_value and piece_count >= max_piece_count: # Higher danger level score
-                max_square_value = square_val 
+            if piece_count >= max_piece_count:
                 max_piece_count = piece_count
-                max_coordinate = cord  
-        print(f"max_piece_count: {max_piece_count}, max_square_value: {max_square_value}, max_coordinate: {max_coordinate}") 
-        return max_coordinate 
+            if square_val >= max_square_value:
+                max_square_value = square_val
+        print(f"max_piece_count: {max_piece_count}, {max_coordinate}, max_square_value: {max_square_value}, {max_coordinate1}") 
+        return [0,0] 
 
     def max_square_score():
         # Find the maximum score on each row and compare
