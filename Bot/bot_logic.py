@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath("__init__.py")))
 
 from collections import deque 
-import itertools
+import random as rd
 
 from game_board import *
 from winning_condition import *
@@ -111,25 +111,20 @@ class Square():
             score[ind] = [max([horizontal.count(player_piece), vertical.count(player_piece), positive_diagonal.count(player_piece),\
                                 negative_diagonal.count(player_piece)]), board[row][col].score, [row, col]]
 
-        # Sort through score
-        # Objective: Find max # of player pieces AND max square score 
-        max_square_value = 0
-        max_piece_count = 0
-        max_coordinate = None 
-        max_coordinate1 = None 
-        # score: {0: [1, 0.6, [0, 1]], 1: [1, 0.6, [0, 5]], 2: [1, 0.6, [0, 9]], 3: [1, 0.7, [1, 2]]}
-        
-        
         # Find all coordinates with maximum piece_count then find the max_square_value among these
-        
-        for ind in range(len(score)):
-            piece_count, square_val, cord = score[ind] # [1, 0.6, [0, 1]]
-            if piece_count >= max_piece_count:
-                max_piece_count = piece_count
-            if square_val >= max_square_value:
-                max_square_value = square_val
-        print(f"max_piece_count: {max_piece_count}, {max_coordinate}, max_square_value: {max_square_value}, {max_coordinate1}") 
-        return [0,0] 
+        max_piece_count = max([score[Ind][0] for Ind in range(len(score))])
+        sorted_square_val = [[score[Ind][1], score[Ind][2]] for Ind in range(len(score)) if score[Ind][0] == max_piece_count]
+        max_square_val = max([sorted_square_val[Ind][0] for Ind in range(len(sorted_square_val))]) 
+        optimized_square = [sorted_square_val[Ind][1] for Ind in range(len(sorted_square_val)) if sorted_square_val[Ind][0] == max_square_val]
+        print(f"sorted_square_val: {sorted_square_val}")
+        print(f"optimized_square: {optimized_square}")
+
+        if len(optimized_square) == 1:
+            return optimized_square[0]
+
+        else:
+            choice = rd.randint(0, len(optimized_square)-1)
+            return optimized_square[choice]  
 
     def max_square_score():
         # Find the maximum score on each row and compare
