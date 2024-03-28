@@ -10,12 +10,26 @@ def clearBoard():
     Game_Board = [[' '] * board_length] * board_length
     return Game_Board
 
+def validateInput(move):
+    try:
+        print(f"move: {move.split(',')}")
+        row, col = move.split(',')
+        if row.isdigit() and int(row) >= 0 and col.isdigit() and int(col) >= 0:
+             return [int(row), int(col)] 
+        else:
+            print("INVALID INPUT!")
+    except ValueError:
+        return False 
+
 def play_move(player):
     global Game_Board
-    move = input('{}, Select a location: '.format(player_name[player]))
-    move_cord = move.split(',')
-    row = int(move_cord[0])
-    col = int(move_cord[1])
+    while True:
+        move = input('{}, Select a location: '.format(player_name[player]))
+        move_cord = validateInput(move) 
+        if move_cord != False:
+            row, col = move_cord
+            break 
+
     if Game_Board[row][col] == ' ':
         Game_Board[row][col] = player_dict[player]
         return [row, col]
