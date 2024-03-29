@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.realpath("__init__.py")))
 
 from collections import deque 
-import random as rd
+import random as rd 
 
 from game_board import *
 from winning_condition import *
@@ -19,7 +19,6 @@ class Square():
         # Convert coordinates array to visual(board) array -> consisting spaces/pieces
         visual_array = [Game_Board[cord[0]][cord[1]] for cord in cord_array]
         botPieceCount = visual_array.count(bot_piece)
-        
         if botPieceCount >= 1: # x >= 1 case (combined)
 
             for _ in range(botPieceCount):
@@ -28,8 +27,8 @@ class Square():
                 board[row][col].score = 'X'
                 leftArray = visual_array[:pieceInd] 
                 rightArray = visual_array[pieceInd+1:] 
-                print(f"array: {visual_array}") 
-                print(f"leftArray: {leftArray}, rightArray: {rightArray}") 
+                # print(f"array: {visual_array}") 
+                # print(f"leftArray: {leftArray}, rightArray: {rightArray}") 
 
                 if bot_piece in leftArray:
                     return Square.breaking_array(cord_array[:pieceInd])
@@ -110,8 +109,8 @@ class Square():
 
             score[ind] = [max([horizontal.count(player_piece), vertical.count(player_piece), positive_diagonal.count(player_piece),\
                                 negative_diagonal.count(player_piece)]), board[row][col].score, [row, col]]
-
-        # Find all coordinates with maximum piece_count then find the max_square_value among these
+   
+        # Find all coordinates with maximum piece_count then find the max_square_value among these        
         max_piece_count = max([score[Ind][0] for Ind in range(len(score))])
         sorted_square_val = [[score[Ind][1], score[Ind][2]] for Ind in range(len(score)) if score[Ind][0] == max_piece_count]
         max_square_val = max([sorted_square_val[Ind][0] for Ind in range(len(sorted_square_val))]) 
@@ -124,13 +123,12 @@ class Square():
 
         else:
             choice = rd.randint(0, len(optimized_square)-1)
-            return optimized_square[choice]  
+            return optimized_square[choice] 
 
     def max_square_score():
         # Find the maximum score on each row and compare
         row_peaks = {}
         for rowID in range(board_length):
-            
             max_val = max([[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if isinstance(board[rowID][i].score, float)])
             max_vals = [[board[rowID][i].score, [rowID, i]] for i in range(len(board[rowID])) if board[rowID][i].score == max_val[0]]
             row_peaks[rowID] = max_vals 
